@@ -3,13 +3,23 @@ package com.example.jetpackcompose
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.example.jetpackcompose.ui.theme.JetpackComposeTheme
 
 class MainActivity : ComponentActivity() {
@@ -17,30 +27,72 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             JetpackComposeTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Greeting("Android")
+                val navController = rememberNavController()
+                val navigateAction = remember(navController) {
+                    MyAppNavigationActions(navController)
                 }
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val selectedDestination = navBackStackEntry?.destination?.route ?: MyAppRoute.HOME
+
+                MyAppContent(
+                    navController = navController,
+                    selectedDestination = selectedDestination,
+                    navigateTopLevelDestination = navigateAction::navigateTo
+                )
             }
         }
     }
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
+fun MyAppContent(
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+    selectedDestination: String,
+    navigateTopLevelDestination: (MyAppTopLevelDestination) -> Unit
+) {
+    Row(modifier = modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            NavHost(
+                modifier = Modifier.weight(1f),
+                navController = navController,
+                startDestination = MyAppRoute.HOME
+            ) {
+                composable(MyAppRoute.HOME) {
+                    HomeScreen()
+                }
+                composable(MyAppRoute.ACCOUNT) {
+                    AccountScreen()
+                }
+                composable(MyAppRoute.SETTINGS) {
+                    SettingsScreen()
+                }
+            }
+            MyAppBottomNavigation(
+                selectedDestination = selectedDestination,
+                navigateTopLevelDestination = navigateTopLevelDestination
+            )
+        }
+    }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
-    JetpackComposeTheme {
-        Greeting("Android")
+fun MyAppBottomNavigation(
+    selectedDestination: String,
+    navigateTopLevelDestination: (MyAppTopLevelDestination) -> Unit
+) {
+    NavigationBar(modifier = Modifier.fillMaxWidth()) {
+        TOP_LEVEL_DESTINATIONS.forEach { destinations ->
+            NavigationBarItem(
+                selected = selectedDestination == destinations.route,
+                onClick = { navigateTopLevelDestination(destinations) },
+                icon = {
+                    Icon(
+                        imageVector = destinations.selectedIcon,
+                        contentDescription = stringResource(id = destinations.iconTextId)
+                    )
+                }
+            )
+        }
     }
 }
