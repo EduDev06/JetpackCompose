@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">JetpackCompose</string>
+
+    <string name="open_dialog">Open Alert Dialog</string>
+    <string name="ok_message">OK</string>
+    <string name="cancel_message">Cancel</string>
+    <string name="title_message">Confirm the message!!</string>
+    <string name="body_message">This is an important message, please confirm the message</string>
 </resources>
