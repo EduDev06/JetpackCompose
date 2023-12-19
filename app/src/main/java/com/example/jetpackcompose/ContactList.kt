@@ -18,6 +18,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,15 +29,18 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun ContactList(
     modifier: Modifier = Modifier,
-    comparator: Comparator<Contact>,
     contacts: List<Contact>
 ) {
     Box(modifier = modifier) {
         val listState = rememberLazyListState()
-        val showButton = listState.firstVisibleItemIndex > 0
+        val showButton by remember {
+            derivedStateOf {
+                listState.firstVisibleItemIndex > 0
+            }
+        }
 
         LazyColumn(state = listState) {
-            items(contacts.sortedWith(comparator)) { contact ->
+            items(contacts, key = { contact -> contact.id }) { contact ->
                 ContactItem(contact = contact)
             }
         }
