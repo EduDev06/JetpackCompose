@@ -102,7 +102,10 @@ fun Content(
 
             PermissionState.SHOULD_SHOW_PERMISSION_RATIONALE -> PermissionDialog(
                 onDismiss = { updatePermissionState(PermissionState.NO_ACTION) },
-                onConfirmation = { permissionLauncher.launch(Manifest.permission.CAMERA) }
+                onConfirmation = {
+                    permissionLauncher.launch(Manifest.permission.CAMERA)
+                    updatePermissionState(PermissionState.NO_ACTION)
+                }
             )
 
             PermissionState.NO_ACTION -> Unit
