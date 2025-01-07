@@ -114,7 +114,7 @@ private fun PreviewCustomButton() {
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun PreviewButtonWithBadge() {
     Box(
@@ -153,7 +153,7 @@ fun PreviewIconButton() {
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun PreviewIconButtonWithText() {
     Button(
